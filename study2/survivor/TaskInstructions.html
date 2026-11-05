@@ -1,0 +1,124 @@
+{{ extends "global/Page.html" }}
+{{ block title }}{{ endblock }}
+
+{{ block styles }}
+<style>
+    /* preview of the task screen */
+    .preview { max-width: 600px; margin: 25px auto; }
+    .preview .countdown-box {
+        background: #e9ecef; text-align: center; font-weight: bold;
+        padding: 10px; border-radius: 6px; margin-bottom: 12px;
+    }
+    .preview .donation-box {
+        background: #d4edda; text-align: center; padding: 8px; border-radius: 6px;
+        font-size: 0.85em; white-space: nowrap;
+    }
+    .preview .amount { font-size: 1.4em; font-weight: bold; margin-top: 4px; }
+
+    /* control questions – highlight wrong answers */
+    .cq { padding: 8px 15px; margin-bottom: 10px; border-radius: 6px; border: 2px solid transparent; }
+    .cq .mb-3, .cq .mb-4, .cq ._formfield { margin-bottom: 0 !important; }
+    .cq.wrong { border-color: #dc3545; background: #f8d7da; }
+    .cq .cq-msg { display: none; color: #dc3545; font-weight: bold; margin-top: 5px; }
+    .cq.wrong .cq-msg { display: block; }
+</style>
+{{ endblock }}
+
+{{ block content }}
+<div class="study-progress-wrap">
+    <progress class="study-progress" id="sp-bar"></progress>
+    <span class="study-progress-text" id="sp-text"></span>
+</div>
+<script>
+    (function () {
+        // Intro (first page) and End (last page) are not counted
+        var current = {{ participant._index_in_pages }} - 2;
+        var total = {{ participant._max_page_index }} - 3;
+        var bar = document.getElementById('sp-bar');
+        bar.max = total;
+        bar.value = current;
+        document.getElementById('sp-text').textContent = current + ' / ' + total;
+    })();
+</script>
+
+<div id="cq-alert" class="alert alert-danger" style="display: none;">
+    Některé odpovědi nejsou správné. Přečtěte si prosím znovu instrukce a odpovědi opravte.
+</div>
+
+<h4 style="text-align: center;"><b>Část 3: Úkol</b></h4>
+
+<p>V této části studie máte možnost svým úsilím přispět k vybudování nových prvků zeleně v příměstské krajině.</p>
+
+<p>
+    Na následující stránce uvidíte časový odpočet začínající na 20 sekundách.
+    Stisknutím mezerníku během tohoto časového limitu se odpočet restartuje.
+    Pokud odpočet necháte dojít do nuly, studie končí.
+</p>
+
+<p>
+    Za každou minutu, kterou na stránce strávíte, my darujeme 5 Kč neziskové společnosti
+    Čmelák (cmelak.cz). Ta získané finance využije k vybudování nových prvků zeleně
+    v příměstské krajině. Na obrázku níže vidíte, jak bude obrazovka vypadat.
+</p>
+
+<div class="preview">
+    <div class="countdown-box">Máte ještě 20 vteřin na stisknutí klávesy mezerník.</div>
+    <div class="donation-box">
+        Na vybudování nových prvků zeleně v příměstské krajině darujeme:
+        <div class="amount">5 Kč</div>
+    </div>
+</div>
+
+<p>
+    Po skončení výzkumu budeme na našem instagramovém profilu @labs_ujep sdílet tabulku s
+    příspěvky všech účastníků a potvrzení o darování celkové částky.
+    Svůj příspěvek v tabulce najdete pod čtyřmístným kódem, který jste obdržel/a na začátku studie.
+</p>
+
+<h5><b>Kontrolní otázky</b></h5>
+<p>
+    Než začneme, odpovězte prosím na následující otázky, na kterých si můžete ověřit,
+    že rozumíte uvedeným instrukcím.
+</p>
+
+<div class="cq" id="box_cq1">{{ formfield 'cq1' }}<div class="cq-msg">Tato odpověď není správná.</div></div>
+<div class="cq" id="box_cq2">{{ formfield 'cq2' }}<div class="cq-msg">Tato odpověď není správná.</div></div>
+<div class="cq" id="box_cq3">{{ formfield 'cq3' }}<div class="cq-msg">Tato odpověď není správná.</div></div>
+<div class="cq" id="box_cq4">{{ formfield 'cq4' }}<div class="cq-msg">Tato odpověď není správná.</div></div>
+
+<button class="btn btn-primary otree-btn-next" style="padding: 10px 30px; font-size: 1.3em;">→</button>
+
+<script>
+    const CORRECT = { cq1: '2', cq2: '3', cq3: '2', cq4: '1' };
+    const form = document.getElementById('form') || document.querySelector('form');
+
+    form.addEventListener('submit', function (e) {
+        let anyWrong = false;
+        for (const [field, right] of Object.entries(CORRECT)) {
+            const checked = form.querySelector('input[name="' + field + '"]:checked');
+            const box = document.getElementById('box_' + field);
+            if (!checked || checked.value !== right) {
+                box.classList.add('wrong');
+                anyWrong = true;
+            } else {
+                box.classList.remove('wrong');
+            }
+        }
+        if (anyWrong) {
+            e.preventDefault();                                   // do not submit
+            document.getElementById('cq-alert').style.display = 'block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });      // show message at top
+        }
+    });
+
+    // remove highlight as soon as the participant changes the answer
+    for (const field of Object.keys(CORRECT)) {
+        form.querySelectorAll('input[name="' + field + '"]').forEach(function (input) {
+            input.addEventListener('change', function () {
+                document.getElementById('box_' + field).classList.remove('wrong');
+            });
+        });
+    }
+</script>
+
+{{ endblock }}

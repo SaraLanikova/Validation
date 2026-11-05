@@ -1,0 +1,304 @@
+{{ extends "otree/Page.html" }}
+{{ load otree static }}
+
+{{ block global_styles }}
+<style>
+    :root {
+        --accent: #337ab7;
+        --accent-dark: #2a6496;
+        --accent-light: #eef4fa;
+        --border: #dfe3e8;
+        --text: #1f2933;
+        --muted: #6b7680;
+        --row-grey: #f6f7f9;
+    }
+
+    /* ---------- Základ ---------- */
+    body {
+        background: #fff;
+        color: var(--text);
+        padding-top: 40px;
+    }
+    .container {
+        max-width: 920px;
+    }
+    .otree-title, .page-header {
+        text-align: left;
+        font-size: 1.5rem;
+        font-weight: 600;
+        border: none;
+        margin: 0.5rem 0 1.5rem;
+    }
+    input[type="radio"], input[type="checkbox"] {
+        accent-color: var(--accent);
+    }
+
+    /* ---------- Progress bar ---------- */
+    .study-progress-wrap {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%;
+        z-index: 1000;
+        background: #fff;
+    }
+    .study-progress {
+        display: block;
+        width: 100%;
+        height: 22px;
+        border: none;
+        appearance: none;
+        -webkit-appearance: none;
+        background: #e9ecef;
+    }
+    .study-progress::-webkit-progress-bar { background: #e9ecef; }
+    .study-progress::-webkit-progress-value { background: var(--accent); }
+    .study-progress::-moz-progress-bar { background: var(--accent); }
+    .study-progress-text {
+        position: absolute;
+        top: 0; left: 12px;
+        line-height: 22px;
+        font-size: 0.75em;
+        font-weight: 600;
+        color: #fff;
+        text-shadow: 0 0 2px rgba(0, 0, 0, 0.4);
+    }
+
+    /* ---------- Instrukce a nápověda ---------- */
+    .instructions-box {
+        background: var(--accent-light);
+        border-left: 4px solid var(--accent);
+        border-radius: 0 10px 10px 0;
+        padding: 16px 20px;
+        margin: 10px 0 32px;
+        font-size: 1.02em;
+        line-height: 1.55;
+    }
+    .instructions-box p:last-child { margin-bottom: 0; }
+    .hint {
+        display: block;
+        font-size: 0.85em;
+        color: var(--muted);
+        margin-top: 6px;
+        line-height: 1.4;
+    }
+
+    /* ---------- Otázky (větší než odpovědi, ne tučně) ---------- */
+    .col-form-label, label.form-label, ._formfield > label {
+        font-weight: 400 !important;
+        font-size: 1.15rem;
+        color: var(--text);
+        margin-bottom: 0.6rem;
+    }
+    ._formfield, .mb-4 {
+        margin-bottom: 1.4rem !important;
+    }
+
+    /* ---------- Textová a číselná pole ---------- */
+    .form-control {
+        max-width: 260px;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        padding: 0.5rem 0.8rem;
+        font-size: 1rem;
+    }
+    textarea.form-control {
+        max-width: 100%;
+        width: 100%;
+        min-height: 150px;
+    }
+    .form-control:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(51, 122, 183, 0.15);
+    }
+
+    /* ---------- Odpovědi: stejná šířka podle nejdelší, klikací celé políčko ---------- */
+    .option-group {
+        display: grid;
+        width: fit-content;
+        min-width: 320px;
+        max-width: 100%;
+    }
+    .form-check {
+        position: relative;
+        width: 100%;
+        max-width: none;
+        padding: 0 !important;
+        margin: 0 0 0.4rem 0 !important;
+        min-height: 0;
+    }
+    .form-check input[type="radio"],
+    .form-check input[type="checkbox"] {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        margin: 0 !important;
+        float: none !important;
+        cursor: pointer;
+        z-index: 1;
+    }
+    .form-check label {
+        display: block;
+        width: 100%;
+        margin: 0;
+        padding: 0.55rem 1.2rem 0.55rem 2.7rem;
+        font-size: 1rem;
+        font-weight: 400;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background 0.15s, border-color 0.15s;
+    }
+    .form-check:hover label {
+        background: #f6f8fa;
+        border-color: #c5cdd6;
+    }
+    .form-check:has(input:checked) label {
+        background: var(--accent-light);
+        border-color: var(--accent);
+    }
+
+    /* ---------- Tabulky se škálou ---------- */
+    table, table.table, table.table-striped {
+        --bs-table-bg: transparent;
+        --bs-table-striped-bg: transparent;
+        --bs-table-accent-bg: transparent;
+        --bs-table-hover-bg: transparent;
+        width: 100%;
+        table-layout: fixed;
+        border-collapse: collapse;
+        margin: 0.5rem 0 1.5rem;
+        background: #fff;
+    }
+    table th, table td {
+        box-shadow: none !important;
+        background: #fff;
+    }
+    table th {
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: var(--text) !important;
+        text-align: center;
+        vertical-align: bottom;
+        padding: 0.5rem 0.15rem 0.75rem;
+        border-bottom: 2px solid var(--border);
+        hyphens: none;
+        word-break: keep-all;
+        overflow-wrap: normal;
+        line-height: 1.3;
+    }
+    table th:first-child, table td:first-child {
+        width: 28%;
+        text-align: left;
+    }
+    table td {
+        text-align: center;
+        vertical-align: middle;
+        padding: 0.7rem 0.15rem;
+        border-bottom: 1px solid #eef0f2;
+        font-size: 1rem;
+    }
+    table tbody tr:nth-child(odd) > td {
+        background: var(--row-grey) !important;
+    }
+    table tbody tr:nth-child(even) > td {
+        background: #fff !important;
+    }
+    table tbody tr:hover > td {
+        background: #eef2f6 !important;
+    }
+    table tbody tr:has(input:checked) > td {
+        background: var(--accent-light) !important;
+    }
+    table td:has(input) {
+        cursor: pointer;
+    }
+    table input[type="radio"] {
+        width: 1.25rem;
+        height: 1.25rem;
+        cursor: pointer;
+    }
+    /* sloupec "netýká se mě" oddělený svislou čárou */
+    table .na-col {
+        border-left: 2px solid var(--border) !important;
+    }
+
+    /* ---------- Tlačítko Další (stejné na všech stránkách) ---------- */
+    .otree-btn-next,
+    .otree-btn-next.btn-lg,
+    .btn.otree-btn-next {
+        display: block !important;
+        margin: 1.5rem 0 2rem auto !important;
+        background: var(--accent) !important;
+        border: none !important;
+        border-radius: 7px !important;
+        padding: 0.45rem 1.4rem !important;
+        font-size: 0.95rem !important;
+        font-weight: 500 !important;
+        line-height: 1.5 !important;
+        width: auto !important;
+        height: auto !important;
+        color: #fff !important;
+    }
+    .otree-btn-next:hover {
+        background: var(--accent-dark) !important;
+    }
+</style>
+{{ endblock }}
+
+{{ block global_scripts }}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    // 1) Kliknutí kamkoli do buňky tabulky zaškrtne odpověď
+    document.querySelectorAll("td").forEach(function (td) {
+        var input = td.querySelector('input[type="radio"], input[type="checkbox"]');
+        if (!input) return;
+        td.addEventListener("click", function (e) {
+            if (e.target === input || e.target.closest("label")) return;
+            input.click();
+        });
+    });
+
+    // 2) Odpovědi každé otázky obalit do vlastní skupiny (šířka podle nejdelší odpovědi)
+    var parents = new Set();
+    document.querySelectorAll(".form-check").forEach(function (fc) {
+        parents.add(fc.parentElement);
+    });
+    parents.forEach(function (parent) {
+        if (parent.classList.contains("option-group")) return;
+        var checks = Array.prototype.filter.call(parent.children, function (el) {
+            return el.classList.contains("form-check");
+        });
+        if (!checks.length) return;
+        var wrap = document.createElement("div");
+        wrap.className = "option-group";
+        parent.insertBefore(wrap, checks[0]);
+        checks.forEach(function (c) { wrap.appendChild(c); });
+    });
+
+    // 3) Sloupec "netýká se mě" oddělit svislou čárou
+    document.querySelectorAll("table").forEach(function (table) {
+        var headRow = table.querySelector("tr");
+        if (!headRow) return;
+        Array.prototype.forEach.call(headRow.children, function (cell, idx) {
+            if (/netýká/i.test(cell.textContent)) {
+                table.querySelectorAll("tr").forEach(function (row) {
+                    var c = row.children[idx];
+                    if (c) c.classList.add("na-col");
+                });
+            }
+        });
+    });
+
+    // 4) Sjednocení tlačítek na "Další"
+    var nextPattern = /^(next|další|dalsi|→|➔|➜|›|»|>|⟶|⇒)$/i;
+    document.querySelectorAll("button").forEach(function (b) {
+        var t = b.textContent.trim();
+        if (b.classList.contains("otree-btn-next") || nextPattern.test(t)) {
+            b.textContent = "Další";
+            b.classList.add("otree-btn-next");
+        }
+    });
+});
+</script>
+{{ endblock }}

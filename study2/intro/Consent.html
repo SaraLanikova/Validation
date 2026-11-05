@@ -1,0 +1,61 @@
+{{ extends "global/Page.html" }}
+{{ block title }}{{ endblock }}
+
+{{ block content }}
+<h4 style="text-align: center;"><b>Informovaný souhlas</b></h4>
+
+    <p>
+        Pro výzkumný projekt: Environmentální postoje <br>
+        Období realizace: listopad–prosinec 2026<br>
+        Řešitelé projektu: Ing. Sára Laníková, Ing. Mgr. Vojtěch Zíka, PhD. et PhD. </br>
+    </p>
+
+    <p>
+        Abyste mohli pokračovat ve studii, potřebujeme od Vás získat <strong>souhlas s účastí ve studii</strong>.
+    </p>
+
+    <p>
+        Cílem této studie je porozumět postojům a chování lidí ve vztahu k životnímu prostředí. Účast na studii přináší tyto výhody či rizika:
+        <ul>
+            <li>
+               Za účast obdržíte fixní finanční odměnu ve výši 100 Kč. Odměna Vám bude vyplacena po skončení studie podle instrukcí administrátora.
+            </li>
+
+            <li>
+               Vaše data jsou uchovávána a spravována anonymně v tom smyslu, že osoby oprávněné zacházet
+                s Vašimi daty, nejsou schopny spojit data s identitou jednotlivých účastníků
+                (dle Nařízení Evropského parlamentu a Rady (EU) 2016/679 o ochraně osobních údajů
+                máte nárok na odvolání souhlasu se zpracováním uchovávaných dat.
+                Z tohoto důvodu jsou Vaše data uložena pod unikátním kódem.).
+            </li>
+
+            <li>
+            Náročnost jakékoliv části této studie nepřekračuje fyzickou nebo psychickou náročnost běžné kancelářské práce.
+            </li>
+
+            <li>
+            Vaše odpovědi budou anonymizovány a spolu s odpověďmi ostatních respondentů budou
+            využity pro sepsání výzkumného článku, který může být publikován v akademickém časopise.
+            V souladu s principy otevřené vědy mohou být anonymizovaná surová data zpřístupněna online na platformách k tomu určených (například osf.io).
+            Zveřejněná data nebudou obsahovat žádné informace umožňující identifikaci účastníků.
+            </li>
+        </ul>
+
+        Projekt je financován ze Studentské grantové soutěže Univerzity Jana Evangelisty Purkyně (číslo projektu UJEP-SGS-2024-45-003-3).
+      Nyní si prosím přečtěte následující Prohlášení. Souhlas s ním, jakožto i souhlas s účastí na studii, potvrďte zaškrtnutím políčka níže.
+    </p>
+
+    <p>
+        <strong>Prohlášení</strong> <br>
+        Prohlašuji, že souhlasím s účastí ve výše uvedené studii. Byl/a jsem informován/a o účelu a průběhu výzkumu, o tom, že budou dodržena všechna pravidla ochrany dat a že získaná data budou použita jen pro účely tohoto výzkumného projektu. Rozumím tomu, že moje účast je dobrovolná a že ji mohu kdykoliv ukončit bez udání důvodu. Beru na vědomí, že anonymizovaná data mohou být anonymně publikována a využita pro vědecké účely.
+        V případě dotazů týkajících se studie nebo nakládání s výzkumnými daty se lze obrátit na  Ing. Sáru Laníkovou (LABS, Fakulta sociálně ekonomická UJEP, sara.lanikova@ujep.cz), která zodpovídá za dodržení uvedených podmínek.  Zaškrtnutím políčka „Souhlasím a chci pokračovat“ potvrzuji, že jsem si výše uvedené informace přečetl/a a rozumím jim, je mi alespoň 18 let a dobrovolně souhlasím s účastí ve studii.
+</div>
+
+
+<div style="margin-top: 10px;">
+
+    {{ formfield 'consent' }}
+
+{{ next_button }}
+
+{{ endblock }}

@@ -1,0 +1,77 @@
+{{ extends "global/Page.html" }}
+{{ block title }}{{ endblock }}
+
+{{ block styles }}
+<style>
+    .countdown-box {
+        background: #e9ecef;
+        text-align: center;
+        font-size: 1.4em;
+        font-weight: bold;
+        padding: 22px;
+        border-radius: 8px;
+        margin: 60px 0 30px;
+    }
+    .donation-box {
+        background: #d4edda;
+        text-align: center;
+        padding: 18px;
+        border-radius: 8px;
+    }
+    .donation-box .amount { font-size: 2em; font-weight: bold; margin-top: 8px; }
+</style>
+{{ endblock }}
+
+{{ block content }}
+
+<div class="countdown-box">
+    Máte ještě <span id="countdown">20</span> vteřin na stisknutí klávesy mezerník.
+</div>
+
+<div class="donation-box">
+    Na vybudování nových prvků zeleně v příměstské krajině darujeme:
+    <div class="amount"><span id="donation">0</span> Kč</div>
+</div>
+
+<input type="hidden" name="presses" id="presses" value="0">
+
+<script>
+    const WINDOW = 20;        // seconds to press the spacebar
+    const SEC_PER_CZK = 12;   // 5 CZK per minute
+
+    // time already elapsed on the server (matters only after a page refresh)
+    const pageLoaded = Date.now() - {{ elapsed_ms }};
+    let deadline = Date.now() + WINDOW * 1000;
+    let presses = 0;
+    let finished = false;
+
+    document.addEventListener('keydown', function (e) {
+        if (e.code === 'Space') {
+            e.preventDefault();                       // stop the page from scrolling
+            if (finished) return;
+            presses++;
+            document.getElementById('presses').value = presses;
+            deadline = Date.now() + WINDOW * 1000;    // reset countdown
+        }
+    });
+
+    function tick() {
+        if (finished) return;
+        const now = Date.now();
+        const left = Math.max(0, Math.ceil((deadline - now) / 1000));
+        const elapsed = (now - pageLoaded) / 1000;
+
+        document.getElementById('countdown').textContent = left;
+        document.getElementById('donation').textContent = Math.floor(elapsed / SEC_PER_CZK);
+
+        if (now >= deadline) {
+            finished = true;
+            const form = document.getElementById('form') || document.querySelector('form');
+            form.submit();                            // end the task automatically
+        }
+    }
+    setInterval(tick, 200);
+    tick();
+</script>
+
+{{ endblock }}

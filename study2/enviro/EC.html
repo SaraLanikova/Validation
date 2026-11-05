@@ -1,0 +1,89 @@
+{{ extends "global/Page.html" }}
+{{ block title }}{{ endblock }}
+
+{{ block styles }}
+<style>
+    thead th {
+        position: sticky;
+        top: 20px;            /* below the progress bar */
+        background: #fff;     /* rows do not show through */
+        z-index: 5;
+    }
+    .matrix { width: 100%; margin-top: 30px; border-collapse: collapse; table-layout: fixed; }
+    .matrix th:first-child, .matrix td.item { width: 25%; }
+    .matrix th {
+        font-weight: normal;
+        font-size: 0.9em;
+        text-align: center;
+        vertical-align: bottom;
+        padding: 8px 4px;
+    }
+    .matrix td { text-align: center; padding: 14px 4px; }
+    .matrix td.item { text-align: left; width: 25%; }
+    .matrix tbody tr:nth-child(odd) td { background: #f7f7f7; }
+    .matrix input[type=radio] { width: 22px; height: 22px; cursor: pointer; }
+</style>
+{{ endblock }}
+
+{{ block content }}
+<div class="study-progress-wrap">
+    <progress class="study-progress" id="sp-bar"></progress>
+    <span class="study-progress-text" id="sp-text"></span>
+</div>
+<script>
+    (function () {
+        // Intro (first page) and End (last page) are not counted
+        var current = {{ participant._index_in_pages }} - 2;
+        var total = {{ participant._max_page_index }} - 3;
+        var bar = document.getElementById('sp-bar');
+        bar.max = total;
+        bar.value = current;
+        document.getElementById('sp-text').textContent = current + ' / ' + total;
+    })();
+</script>
+<p>
+<h4 style="text-align: center;"><b>Část 2: Dotazník 1 z 6</b></h4>
+</p>
+
+<div class="instructions-box">
+    <p>
+        Lidé na celém světě jsou obecně znepokojeni problémy životního prostředí kvůli
+        důsledkům, které poškozování přírody přináší. Lidé se však liší v tom, jaké důsledky
+        je nejvíce znepokojují. V odpovědi na otázku ohodnoťte každou z následujících položek
+        na škále od 1 (nedůležité) do 7 (mimořádně důležité).
+    </p>
+</div>
+
+<p style="font-size: 1.15em;">Problémy životního prostředí mě znepokojují kvůli důsledkům pro...</p>
+
+<table class="matrix">
+    <thead>
+        <tr>
+            <th></th>
+            <th>1<br>(nedůležité)</th>
+            <th>2</th>
+            <th>3</th>
+            <th>4</th>
+            <th>5</th>
+            <th>6</th>
+            <th>7<br>(mimořádně<br>důležité)</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{ for item in items }}
+        <tr>
+            <td class="item">{{ item.label }}</td>
+            {{ for v in scale }}
+            <td>
+                <input type="radio" name="{{ item.field }}" value="{{ v }}" required>
+            </td>
+            {{ endfor }}
+        </tr>
+        {{ endfor }}
+    </tbody>
+</table>
+
+<br>
+{{ next_button }}
+
+{{ endblock }}

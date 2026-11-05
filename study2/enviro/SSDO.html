@@ -1,0 +1,71 @@
+{{ extends "global/Page.html" }}
+{{ block title }}{{ endblock }}
+
+{{ block styles }}
+<style>
+    .ssdo-item {
+        padding: 22px 0;
+        border-bottom: 1px solid #e5e5e5;      /* thin line between statements */
+    }
+    .ssdo-item:last-of-type { border-bottom: none; }
+    .ssdo-item .statement { font-size: 1.15em; margin-bottom: 10px; }
+
+    .v-option {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: #f0f0f0;
+        padding: 6px 12px;                       /* was 14px 16px */
+        margin-bottom: 4px;                      /* was 10px */
+        cursor: pointer;
+        max-width: 650px;                        /* boxes not across the whole page */
+    }
+    .v-option input { width: 18px; height: 18px; margin: 0; cursor: pointer; }
+    .v-option:hover { background: #e3e3e3; }
+    .v-option:has(input:checked) { background: #d6e6f5; }
+</style>
+{{ endblock }}
+
+{{ block content }}
+<div class="study-progress-wrap">
+    <progress class="study-progress" id="sp-bar"></progress>
+    <span class="study-progress-text" id="sp-text"></span>
+</div>
+<script>
+    (function () {
+        // Intro (first page) and End (last page) are not counted
+        var current = {{ participant._index_in_pages }} - 2;
+        var total = {{ participant._max_page_index }} - 3;
+        var bar = document.getElementById('sp-bar');
+        bar.max = total;
+        bar.value = current;
+        document.getElementById('sp-text').textContent = current + ' / ' + total;
+    })();
+</script>
+
+<p>
+<h4 style="text-align: center;"><b>Část 2: Dotazník 5 z 6</b></h4>
+</p>
+
+<div class="instructions-box">
+    <p>Předposlední dotazník se skládá ze čtyř výroků. Uveďte, jaký postoj máte
+    k uvedeným výrokům na škále od "<b>naprosto souhlasím</b>" do
+    "<b>naprosto nesouhlasím</b>".
+    </p>
+</div>
+
+{{ for item in items }}
+<div class="ssdo-item">
+    <p class="statement">{{ item.label }}</p>
+    {{ for opt in scale }}
+    <label class="v-option">
+        <input type="radio" name="{{ item.field }}" value="{{ opt.value }}" required>
+        <span>{{ opt.text }}</span>
+    </label>
+    {{ endfor }}
+</div>
+{{ endfor }}
+
+<button class="btn btn-primary otree-btn-next" style="padding: 10px 30px; font-size: 1.3em;">→</button>
+
+{{ endblock }}

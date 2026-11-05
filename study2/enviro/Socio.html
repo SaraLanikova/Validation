@@ -1,0 +1,109 @@
+{{ extends "global/Page.html" }}
+{{ block title }}{{ endblock }}
+
+{{ block styles }}
+<style>
+    .slider-labels {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.9em;
+        margin-top: 20px;
+    }
+    .slider-labels span { width: 33%; }
+    .slider-labels span:nth-child(2) { text-align: center; }
+    .slider-labels span:nth-child(3) { text-align: right; }
+    .slider-value {
+        text-align: center;
+        font-size: 1.4em;
+        color: #337ab7;
+        margin: 15px 0 5px;
+    }
+</style>
+{{ endblock }}
+
+{{ block content }}
+<div class="study-progress-wrap">
+    <progress class="study-progress" id="sp-bar"></progress>
+    <span class="study-progress-text" id="sp-text"></span>
+</div>
+<script>
+    (function () {
+        // Intro (first page) and End (last page) are not counted
+        var current = {{ participant._index_in_pages }} - 2;
+        var total = {{ participant._max_page_index }} - 3;
+        var bar = document.getElementById('sp-bar');
+        bar.max = total;
+        bar.value = current;
+        document.getElementById('sp-text').textContent = current + ' / ' + total;
+    })();
+</script>
+<h4 style="text-align: center;"><b>Část 1: Sociodemografické otázky</b></h4>
+{{ formfield 'participantID' }}
+{{ formfield 'sex' }}
+{{ formfield 'age' }}
+{{ formfield 'education' }}
+{{ formfield 'region' }}
+
+<!-- Slider: political orientation – economic -->
+<p>
+    Jaká je Vaše politická orientace z <u>ekonomického</u> hlediska?
+    (Levice podporuje větší roli státu v ekonomice, vyšší zdanění bohatých
+    a redistribuci bohatství. Pravice podporuje volný trh, nižší daně a menší
+    zásahy státu do ekonomiky.)
+    <span class="hint">
+    Střed posuvníku (hodnota 0) odpovídá středové orientaci. Čím více levicově smýšlíte,
+    tím více posuňte posuvník doleva. Čím více pravicově smýšlíte, tím více ho posuňte doprava.
+    </span>
+</p>
+
+<div class="slider-labels">
+    <span>Extrémně<br>levicová</span>
+    <span>Středová</span>
+    <span>Extrémně<br>pravicová</span>
+</div>
+
+<div class="slider-value" id="economic_PO_value">0</div>
+
+<input type="range" class="form-range"
+       name="economic_PO" id="economic_PO"
+       min="-50" max="50" step="1" value="0"
+       oninput="document.getElementById('economic_PO_value').textContent = this.value">
+
+{{ formfield_errors 'economic_PO' }}
+
+<br><br>
+
+<!-- Slider: political orientation – cultural -->
+<p>
+    Jaká je Vaše politická orientace z <u>kulturního</u> hlediska?
+    (Liberalismus podporuje změny, svobodu a rovnoprávnost.
+    Konzervatismus podporuje tradiční hodnoty, udržení statu quo.)
+    <span class="hint">
+    Střed posuvníku (hodnota 0) odpovídá středové orientaci. Čím více liberálně smýšlíte,
+    tím více posuňte posuvník doleva. Čím více kozervativně smýšlíte, tím více ho posuňte doprava.
+    </span>
+</p>
+
+<div class="slider-labels">
+    <span>Extrémně<br>liberální</span>
+    <span>Středová</span>
+    <span>Extrémně<br>konzervativní</span>
+</div>
+
+<div class="slider-value" id="cultural_PO_value">0</div>
+
+<input type="range" class="form-range"
+       name="cultural_PO" id="cultural_PO"
+       min="-50" max="50" step="1" value="0"
+       oninput="document.getElementById('cultural_PO_value').textContent = this.value">
+
+{{ formfield_errors 'cultural_PO' }}
+
+<br><br>
+
+{{ formfield 'income' }}
+{{ formfield 'occupation' }}
+
+{{ next_button }}
+
+{{ endblock }}
