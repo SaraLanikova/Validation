@@ -6,7 +6,7 @@ SESSION_CONFIGS = [
         display_name='Enviro - Study 2',
         #app_sequence=['survivor', 'outro'],
         app_sequence=['intro', 'enviro', 'survivor', 'outro'],
-        num_demo_participants=1,
+        num_demo_participants=5,
     ),
 ]
 
