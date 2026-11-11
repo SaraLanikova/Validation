@@ -13,7 +13,9 @@ SESSION_CONFIGS = [
 
 SESSION_CONFIG_DEFAULTS = dict(
     real_world_currency_per_point=1.00,
-    participation_fee=0.00, doc=""
+    participation_fee=250.00, doc="",
+    max_returns=1,  # 0 = no confirmation screen, 1 = one return, 100 = unlimited
+    confirm_seconds=60
 )
 
 PARTICIPANT_FIELDS = ['participant_code']

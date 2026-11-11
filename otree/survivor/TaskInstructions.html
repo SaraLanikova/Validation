@@ -21,6 +21,7 @@
     .cq.wrong { border-color: #dc3545; background: #f8d7da; }
     .cq .cq-msg { display: none; color: #dc3545; font-weight: bold; margin-top: 5px; }
     .cq.wrong .cq-msg { display: block; }
+    .cq label.col-form-label, .cq legend { font-size: inherit !important; }
 </style>
 {{ endblock }}
 
@@ -47,25 +48,28 @@
 
 <h4 style="text-align: center;"><b>Část 3: Úkol</b></h4>
 
-<p>V této části studie máte možnost svým úsilím přispět k vybudování nových prvků zeleně v příměstské krajině.</p>
+<p>V této části studie máte možnost svým úsilím přispět k výsadbě stromů nebo keřů v české krajině.</p>
 
 <p>
     Na následující stránce uvidíte časový odpočet začínající na 20 sekundách.
     Stisknutím mezerníku během tohoto časového limitu se odpočet restartuje.
-    Pokud odpočet necháte dojít do nuly, studie končí.
+    Pokud odpočet necháte dojít do nuly, studie končí a zobrazí se Vám závěrečná stránka studie.
+    Pak můžete v tichosti odejít.
 </p>
 
 <p>
-    Za každou minutu, kterou na stránce strávíte, my darujeme 5 Kč neziskové společnosti
-    Čmelák (cmelak.cz). Ta získané finance využije k vybudování nových prvků zeleně
-    v příměstské krajině. Na obrázku níže vidíte, jak bude obrazovka vypadat.
+    Za každou minutu, kterou na stránce strávíte, darujeme 6 Kč neziskové organizaci
+    Sázíme stromy (sazimestromy.cz). Získané finance přispějí k výsadbě nových listnatých nebo ovocných stromů, případně keřů v České republice.
+    Stromy v létě ochlazují své okolí, zadržují vodu v krajině a poskytují domov mnoha živočichům.
+    Jeden vzrostlý strom navíc pohltí přibližně 22 kg CO<sub>2</sub> ročně.
+    Na obrázku níže vidíte, jak bude obrazovka vypadat.
 </p>
 
 <div class="preview">
     <div class="countdown-box">Máte ještě 20 vteřin na stisknutí klávesy mezerník.</div>
     <div class="donation-box">
-        Na vybudování nových prvků zeleně v příměstské krajině darujeme:
-        <div class="amount">5 Kč</div>
+        Na podporu výsadby stromů nebo keřů v české krajině darujeme:
+        <div class="amount">6 Kč</div>
     </div>
 </div>
 
@@ -75,7 +79,7 @@
     Svůj příspěvek v tabulce najdete pod čtyřmístným kódem, který jste obdržel/a na začátku studie.
 </p>
 
-<h5><b>Kontrolní otázky</b></h5>
+<h4><b>Kontrolní otázky</b></h4>
 <p>
     Než začneme, odpovězte prosím na následující otázky, na kterých si můžete ověřit,
     že rozumíte uvedeným instrukcím.
@@ -89,7 +93,7 @@
 <button class="btn btn-primary otree-btn-next" style="padding: 10px 30px; font-size: 1.3em;">→</button>
 
 <script>
-    const CORRECT = { cq1: '2', cq2: '3', cq3: '2', cq4: '1' };
+    const CORRECT = { cq1: '3', cq2: '3', cq3: '2', cq4: '1' };
     const form = document.getElementById('form') || document.querySelector('form');
 
     form.addEventListener('submit', function (e) {

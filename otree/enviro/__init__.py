@@ -518,7 +518,6 @@ def ef_field(name):
 
 class Player(BasePlayer):
     # ---- Socio ----
-    participantID = models.IntegerField(label='Jaké je číslo Vašeho místa, které jste si vylosoval/a při příchodu?')
     sex = models.StringField(label='Jaké je Vaše pohlaví (úřední v okamžiku narození)?',
                              choices=[
                                 ["female", "Žena"],
@@ -545,9 +544,9 @@ class Player(BasePlayer):
         choices=[
             ["praha",'hl. m. Praha'],
             ["ustecky",'Ústecký'],
-            ["stedocesky", 'Středočeský'],
+            ["stredocesky", 'Středočeský'],
             ["liberecky", 'Liberecký'],
-            ["karlovasrky", 'Karlovarský'],
+            ["karlovarsky", 'Karlovarský'],
             ["plzensky", 'Plzeňský'],
             ["kralovehradecky", 'Královéhradecký'],
             ["pardubicky", 'Pardubický'],
@@ -808,7 +807,7 @@ class ObecneInstrukce(Page): pass
 
 class Socio(Page):
     form_model = 'player'
-    form_fields = ["participantID",'sex','age', 'education',"region","economic_PO","cultural_PO","income","occupation"]          # add all 10
+    form_fields = ['sex','age', 'education',"region","economic_PO","cultural_PO","income","occupation"]          # add all 10
 
     @staticmethod
     def before_next_page(player, timeout_happened):

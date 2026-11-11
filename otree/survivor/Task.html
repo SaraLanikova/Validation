@@ -3,6 +3,14 @@
 
 {{ block styles }}
 <style>
+    .task-center {
+        min-height: 75vh;                 /* most of the screen height */
+        display: flex;
+        flex-direction: column;
+        justify-content: center;          /* vertical centre */
+        max-width: 700px;
+        margin: 0 auto;                   /* horizontal centre */
+    }
     .countdown-box {
         background: #e9ecef;
         text-align: center;
@@ -10,7 +18,7 @@
         font-weight: bold;
         padding: 22px;
         border-radius: 8px;
-        margin: 60px 0 30px;
+        margin-bottom: 30px;
     }
     .donation-box {
         background: #d4edda;
@@ -19,55 +27,148 @@
         border-radius: 8px;
     }
     .donation-box .amount { font-size: 2em; font-weight: bold; margin-top: 8px; }
+
+    /* confirmation screen */
+    .confirm-box {
+        background: #e9ecef;
+        text-align: center;
+        padding: 28px;
+        border-radius: 8px;
+    }
+    .confirm-buttons { display: flex; gap: 20px; justify-content: center; margin: 25px 0 15px; }
+    .confirm-buttons .btn { min-width: 220px; padding: 10px 20px; font-size: 1.1em; }
+    .confirm-note { font-size: 0.9em; color: #555; margin-bottom: 0; }
+    .confirm-box h4, .confirm-box p { text-align: center; }
 </style>
 {{ endblock }}
 
 {{ block content }}
 
-<div class="countdown-box">
-    Máte ještě <span id="countdown">20</span> vteřin na stisknutí klávesy mezerník.
-</div>
+<div class="task-center">
 
-<div class="donation-box">
-    Na vybudování nových prvků zeleně v příměstské krajině darujeme:
-    <div class="amount"><span id="donation">0</span> Kč</div>
+    <!-- task screen -->
+    <div id="task-screen">
+        <div class="countdown-box">
+            Máte ještě <span id="countdown">20</span> vteřin na stisknutí klávesy mezerník.
+        </div>
+
+        <div class="donation-box">
+            Na podporu výsadby stromů nebo keřů v české krajině darujeme:
+            <div class="amount"><span id="donation">0</span> Kč</div>
+        </div>
+    </div>
+
+    <!-- confirmation screen -->
+    <div id="confirm-screen" style="display: none;">
+        <div class="confirm-box">
+            <h4><b>Odpočet doběhl do nuly.</b></h4>
+            <p>Chcete úkol ukončit, nebo v něm pokračovat?</p>
+            <div class="confirm-buttons">
+                <button type="button" class="btn btn-secondary" id="btn-continue">Pokračovat v úkolu</button>
+                <button type="button" class="btn btn-secondary" id="btn-end">Ukončit úkol</button>
+            </div>
+            <p class="confirm-note">
+                Pokud nezvolíte žádnou možnost, úkol se za <span id="confirm-countdown"></span> vteřin ukončí.
+            </p>
+        </div>
+    </div>
+
 </div>
 
 <input type="hidden" name="presses" id="presses" value="0">
+<input type="hidden" name="returns_used" id="returns_used" value="0">
+<input type="hidden" name="pause_ms" id="pause_ms" value="0">
+<input type="hidden" name="end_reason" id="end_reason" value="">
 
 <script>
-    const WINDOW = 20;        // seconds to press the spacebar
-    const SEC_PER_CZK = 12;   // 5 CZK per minute
+    const WINDOW = {{ window_seconds }};          // seconds to press the spacebar
+    const SEC_PER_CZK = {{ sec_per_czk }};        // 10 s = 1 CZK (6 CZK per minute)
+    const MAX_RETURNS = {{ max_returns }};        // 0 = no confirmation screen
+    const CONFIRM_WINDOW = {{ confirm_seconds }}; // seconds to answer the confirmation screen
 
     // time already elapsed on the server (matters only after a page refresh)
     const pageLoaded = Date.now() - {{ elapsed_ms }};
     let deadline = Date.now() + WINDOW * 1000;
     let presses = 0;
+    let returnsUsed = 0;
+    let pauseMs = 0;          // total time on the confirmation screen
+    let paused = false;
+    let pauseStart = 0;
+    let confirmDeadline = 0;
     let finished = false;
+
+    const form = document.getElementById('form') || document.querySelector('form');
+    const taskScreen = document.getElementById('task-screen');
+    const confirmScreen = document.getElementById('confirm-screen');
 
     document.addEventListener('keydown', function (e) {
         if (e.code === 'Space') {
             e.preventDefault();                       // stop the page from scrolling
-            if (finished) return;
+            if (finished || paused) return;           // spacebar does nothing on the confirmation screen
             presses++;
-            document.getElementById('presses').value = presses;
             deadline = Date.now() + WINDOW * 1000;    // reset countdown
         }
     });
 
+    function showConfirm(now) {
+        paused = true;
+        pauseStart = now;
+        confirmDeadline = now + CONFIRM_WINDOW * 1000;
+        taskScreen.style.display = 'none';
+        confirmScreen.style.display = 'block';
+        document.getElementById('confirm-countdown').textContent = CONFIRM_WINDOW;
+    }
+
+    function resumeTask() {
+        if (finished || !paused) return;
+        const now = Date.now();
+        pauseMs += now - pauseStart;                  // time on the confirmation screen is not counted
+        paused = false;
+        returnsUsed++;
+        deadline = now + WINDOW * 1000;               // new countdown, amount continues
+        confirmScreen.style.display = 'none';
+        taskScreen.style.display = 'block';
+        tick();
+    }
+
+    function endTask(reason) {
+        if (finished) return;
+        finished = true;
+        if (paused) pauseMs += Date.now() - pauseStart;
+        document.getElementById('presses').value = presses;
+        document.getElementById('returns_used').value = returnsUsed;
+        document.getElementById('pause_ms').value = Math.round(pauseMs);
+        document.getElementById('end_reason').value = reason;
+        form.submit();
+    }
+
+    document.getElementById('btn-end').addEventListener('click', function () { endTask('confirmed'); });
+    document.getElementById('btn-continue').addEventListener('click', resumeTask);
+
     function tick() {
         if (finished) return;
         const now = Date.now();
+
+        // confirmation screen: own countdown, then the task ends
+        if (paused) {
+            const leftC = Math.max(0, Math.ceil((confirmDeadline - now) / 1000));
+            document.getElementById('confirm-countdown').textContent = leftC;
+            if (now >= confirmDeadline) endTask('confirm_timeout');
+            return;
+        }
+
         const left = Math.max(0, Math.ceil((deadline - now) / 1000));
-        const elapsed = (now - pageLoaded) / 1000;
+        const elapsed = (now - pageLoaded - pauseMs) / 1000;
 
         document.getElementById('countdown').textContent = left;
-        document.getElementById('donation').textContent = Math.floor(elapsed / SEC_PER_CZK);
+        document.getElementById('donation').textContent = Math.ceil(Math.floor(elapsed) / SEC_PER_CZK);
 
         if (now >= deadline) {
-            finished = true;
-            const form = document.getElementById('form') || document.querySelector('form');
-            form.submit();                            // end the task automatically
+            if (returnsUsed < MAX_RETURNS) {
+                showConfirm(now);                     // ask before ending
+            } else {
+                endTask('countdown');                 // no returns left: end as before
+            }
         }
     }
     setInterval(tick, 200);

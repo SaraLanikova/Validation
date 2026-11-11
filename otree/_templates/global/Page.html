@@ -243,6 +243,15 @@
     .otree-btn-next:hover {
         background: var(--accent-dark) !important;
     }
+
+    /* ---------- Varování nezodpovězených otázek ---------- */
+    #answer-alert {
+        position: fixed; top: 28px; left: 50%; transform: translateX(-50%);
+        z-index: 1100; display: none; box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+    .missing-answer { background: #f8d7da !important; border-radius: 6px; }
+
+    p, li { text-align: justify; hyphens: auto; }
 </style>
 {{ endblock }}
 
@@ -298,6 +307,40 @@ document.addEventListener("DOMContentLoaded", function () {
             b.textContent = "Další";
             b.classList.add("otree-btn-next");
         }
+    });
+});
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var form = document.getElementById('form') || document.querySelector('form');
+    if (!form) return;
+
+    var alertBox = document.createElement('div');
+    alertBox.id = 'answer-alert';
+    alertBox.className = 'alert alert-danger';
+    alertBox.textContent = 'Prosím, zodpovězte všechny otázky.';
+    document.body.appendChild(alertBox);
+
+    var firstInvalid = null;
+
+    // fired for every required field that is empty when the form is submitted
+    form.addEventListener('invalid', function (e) {
+        e.preventDefault();                                   // hide the browser's own bubble
+        var box = e.target.closest('tr, .fp-q, .cq, ._formfield, .mb-3, .mb-4') || e.target;
+        box.classList.add('missing-answer');
+        if (!firstInvalid) {
+            firstInvalid = box;
+            alertBox.style.display = 'block';
+            box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            setTimeout(function () { firstInvalid = null; }, 300);
+        }
+    }, true);
+
+    // remove the highlight as soon as the question is answered
+    form.addEventListener('change', function (e) {
+        var box = e.target.closest('.missing-answer');
+        if (box) box.classList.remove('missing-answer');
+        if (!form.querySelector('.missing-answer')) alertBox.style.display = 'none';
     });
 });
 </script>
