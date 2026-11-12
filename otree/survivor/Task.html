@@ -104,6 +104,7 @@
     document.addEventListener('keydown', function (e) {
         if (e.code === 'Space') {
             e.preventDefault();                       // stop the page from scrolling
+            if (e.repeat) return;                     // holding the key does not count, must press again
             if (finished || paused) return;           // spacebar does nothing on the confirmation screen
             presses++;
             deadline = Date.now() + WINDOW * 1000;    // reset countdown
